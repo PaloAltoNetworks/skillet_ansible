@@ -1,0 +1,31 @@
+namespace: paloaltonetworks
+
+name: skillet
+
+version: 1.0.1
+
+readme: README.md
+
+authors:
+  - Nathan Embery <nembery@paloaltonetworks.com>
+
+description: Collection for working with PAN-OS Skillets
+
+license_file: 'LICENSE'
+
+tags:
+  - networking
+  - paloaltonetworks
+  - panw
+  - security
+  - panos
+
+dependencies: {
+  'paloaltonetworks.panos': '*'
+}
+
+repository: https://github.com/PaloAltoNetworks/skillet_ansible
+
+homepage: https://github.com/PaloAltoNetworks/skillet_ansible
+
+issues: https://github.com/PaloAltoNetworks/skillet_ansible/issues
