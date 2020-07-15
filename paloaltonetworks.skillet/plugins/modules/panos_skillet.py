@@ -56,7 +56,7 @@ options:
     vars:
         description:
             - a dict of variables as required by the skillet to be executed
-            - If not vars are given then the default values from the skillet are uses
+            - If no vars are given then the default values from the skillet are used
         required: False
         type: complex
 
@@ -95,6 +95,7 @@ def main():
     module_args = dict(
         skillet=dict(type='str', required=True),
         skillet_path=dict(type='str', required=True),
+        filter_snippets=dict(type='dict'),
         vars=dict(type='dict'),
         provider=dict(type='dict', required=True)
     )
@@ -110,6 +111,8 @@ def main():
     skillet_context = dict()
     skillet_context.update(module.params['vars'])
     skillet_context.update(module.params['provider'])
+
+    skillet_context['__filter_snippets'] = module.params['filter_snippets']
 
     skillet_loader = SkilletLoader(module.params['skillet_path'])
 
