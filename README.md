@@ -1,3 +1,9 @@
+# :warning: Deprication Notice :warning:
+
+This repository is depricated and scheduled to removed 10/30/2020. Development of this project is continued in a different repository, located here:
+
+https://github.com/PaloAltoNetworks/panw-gse.skillets
+
 # skillet-ansible
 
 Collection for working with Skillets
