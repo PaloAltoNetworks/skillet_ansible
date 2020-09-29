@@ -1,8 +1,8 @@
-namespace: nembery
+namespace: pan_community
 
 name: skillet
 
-version: 1.0.3
+version: 1.0.4
 
 readme: README.md
 
