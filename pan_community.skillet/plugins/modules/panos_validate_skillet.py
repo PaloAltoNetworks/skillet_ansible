@@ -117,7 +117,7 @@ def main():
     skillet = skillet_loader.get_skillet_with_name(module.params['skillet'])
 
     if skillet is None:
-        module.fail_json(msg='Could not find Skillet with name {0}'.format(module.params['name']))
+        module.fail_json(msg='Could not find Skillet with name {0}'.format(module.params['skillet']))
 
     # refuse to run any non panos / panorama skillet types
     if not skillet.type == 'pan_validation':
