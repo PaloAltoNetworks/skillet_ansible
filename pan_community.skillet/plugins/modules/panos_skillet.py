@@ -37,7 +37,7 @@ author: "Nathan Embery (@nembery)"
 version_added: "0.1"
 
 requirements:
-    - skilletlib
+    - skilletlib >= 0.3.9.6
 
 notes:
     - Check mode is not supported.
@@ -56,19 +56,24 @@ options:
     vars:
         description:
             - a dict of variables as required by the skillet to be executed
-            - If not vars are given then the default values from the skillet are uses
+            - If no vars are given then the default values from the skillet are used
         required: False
         type: complex
 
 '''
 
 EXAMPLES = '''
+- name: Grab IronSkillet configuration variables
+  include_vars: 'vars.yml'
+  no_log: 'yes'
+
 - name: Executes IronSkillet
   panos_skillet:
     provider: '{{ provider }}'
     skillet: skillet_full_panos_v81
     skillet_path: /var/tmp/skillets/iron-skillet
-
+    vars: '{{ iron_skillet_vars }}'
+     
 '''
 
 RETURN = '''

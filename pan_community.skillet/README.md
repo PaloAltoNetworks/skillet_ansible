@@ -40,7 +40,7 @@ variable values.
 A more complete example can be found [here](https://github.com/nembery/panos_ansible_iron_skillet).
 
 ## Python Library Requirements:
-* skilletlib
+* skilletlib >= 0.3.9
 * pandevice
 * pan-python
 

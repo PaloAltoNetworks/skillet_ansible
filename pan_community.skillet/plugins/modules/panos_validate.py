@@ -25,7 +25,7 @@ ANSIBLE_METADATA = {'metadata_version': '0.1',
 
 DOCUMENTATION = '''
 ---
-module: panos_validate_skillet 
+module: panos_validate 
 short_description: Execute 'pan_validation' type skillet 
 description:
     - This module executes a panos skillet on the target host
@@ -37,7 +37,7 @@ author: "Andrew Mallory (@andrewmallory)"
 version_added: "0.1"
 
 requirements:
-    - skilletlib
+    - skilletlib >= 0.3.9.6
 
 notes:
     - Check mode is not supported.
@@ -56,19 +56,23 @@ options:
     vars:
         description:
             - a dict of variables as required by the skillet to be executed
-            - If not vars are given then the default values from the skillet are uses
+            - If no vars are given then the default values from the skillet are used
         required: False
         type: complex
         
 '''
 
 EXAMPLES = '''
-- name: Executes IronSkillet
-  execute_skillet:
+- name: Grab configuration variables
+  include_vars: 'vars.yml'
+  no_log: 'yes'
+
+- name: Executes IronSkillet Validation
+  panos_validate::
     provider: '{{ provider }}'
-    skillet: skillet_full_panos_v81
+    skillet: validate-IronSkillet-v10_0-panos-bae945bc-c667-4e56-a3fc-73bbb5afbe0d
     skillet_path: /var/tmp/skillets/iron-skillet
-    
+    vars: '{{ skillet_vars }}'
 '''
 
 RETURN = '''
