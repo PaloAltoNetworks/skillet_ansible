@@ -5,7 +5,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-#  Copyright 2019 Palo Alto Networks, Inc
+#  Copyright 2020 Palo Alto Networks, Inc
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -25,15 +25,15 @@ ANSIBLE_METADATA = {'metadata_version': '0.1',
 
 DOCUMENTATION = '''
 ---
-module: panos_skillet 
-short_description: Execute 'panos' type skillet 
+module: panos_validate 
+short_description: Execute 'pan_validation' type skillet 
 description:
     - This module executes a panos skillet on the target host
     - This module does not provide guards of any sort, so USE AT YOUR OWN RISK.
     - Refer to the Skillet documentation for more details
     - https://docs.paloaltonetworks.com/pan-os.html
-
-author: "Nathan Embery (@nembery)"
+    
+author: "Andrew Mallory (@andrewmallory)"
 version_added: "0.1"
 
 requirements:
@@ -47,7 +47,7 @@ options:
         description:
             - The id of the skillet to execute
         required: True
-
+    
     skillet_path:
         description:
             - The path where one or more skillets will be loaded from
@@ -59,21 +59,20 @@ options:
             - If no vars are given then the default values from the skillet are used
         required: False
         type: complex
-
+        
 '''
 
 EXAMPLES = '''
-- name: Grab IronSkillet configuration variables
+- name: Grab configuration variables
   include_vars: 'vars.yml'
   no_log: 'yes'
 
-- name: Executes IronSkillet
-  panos_skillet:
+- name: Executes IronSkillet Validation
+  panos_validate::
     provider: '{{ provider }}'
-    skillet: skillet_full_panos_v81
+    skillet: validate-IronSkillet-v10_0-panos-bae945bc-c667-4e56-a3fc-73bbb5afbe0d
     skillet_path: /var/tmp/skillets/iron-skillet
-    vars: '{{ iron_skillet_vars }}'
-     
+    vars: '{{ skillet_vars }}'
 '''
 
 RETURN = '''
@@ -83,6 +82,7 @@ stdout:
     type: string
     sample: "{entry: {@name: dmz-block, ip-netmask: 192.168.55.0/24, description: Address CIDR for sales org}}"
 '''
+
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -124,17 +124,18 @@ def main():
         module.fail_json(msg='Could not find Skillet with name {0}'.format(module.params['skillet']))
 
     # refuse to run any non panos / panorama skillet types
-    if 'pan' not in skillet.type:
+    if not skillet.type == 'pan_validation':
         module.fail_json(msg='Invalid Skillet Type')
 
     try:
         output = skillet.execute(skillet_context)
-
-        # all pan type skillet will report changes via the 'changed' flag in the output
-        changed = output.get('changed', True)
-
         output_str = json.dumps(output)
-        module.exit_json(changed=changed, stdout=output_str)
+
+        for snippet in output['pan_validation']:
+            if not output['pan_validation'][snippet]['results']:
+                module.fail_json(msg=output_str)
+
+        module.exit_json(changed=False, stdout=output_str)
 
     except PanoplyException as p:
         module.fail_json(msg='{0}'.format(p))

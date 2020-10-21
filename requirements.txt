@@ -1,0 +1,4 @@
+ansible==2.10.0
+pan-python==0.16.0
+pandevice==0.14.0
+skilletlib==0.3.9.6
