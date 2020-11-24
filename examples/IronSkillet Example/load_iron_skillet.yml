@@ -1,0 +1,135 @@
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  collections:
+    - paloaltonetworks.panos
+    - pan_community.skillet
+
+  vars:
+    provider:
+      ip_address: '{{ ip_address }}'
+      username: '{{ username }}'
+      password: '{{ password }}'
+
+  tasks:
+    - name: Include User Variables
+      include_vars: vars/main.yml
+
+    - name: Ensure deps are available
+      # Ensure we have all the right requirements installed in this environment
+      pip:
+        name:
+          - pan-python
+          - pandevice
+          - xmltodict
+          - requests
+          - requests_toolbelt
+          - skilletlib
+
+    - name: Show System Info
+      # Grab the system info to determine current sw-version
+      # this will also wait for the device to come on-line
+      panos_op:
+        provider: '{{ provider }}'
+        cmd: 'show system info'
+      register: system_info
+      until: system_info is not failed
+      retries: 30
+      delay: 60
+
+    - set_fact: system_info_json="{{ system_info.stdout | from_json }}"
+
+    - set_fact:
+        sw_version: "{{ system_info_json.response.result.system['sw-version'] }}"
+
+    - set_fact:
+        FW_NAME: "{{ system_info_json.response.result.system['hostname'] }}"
+        MGMT_TYPE: "{{ 'dhcp-client' if (system_info_json.response.result.system['is-dhcp'] == 'yes') else 'static' }}"
+        ADMINISTRATOR_USERNAME: "{{ username }}"
+        ADMINISTRATOR_PASSWORD: "{{ password }}"
+      when: preserve_management == 'yes'
+
+    - set_fact:
+        MGMT_IP: "{{ system_info_json.response.result.system['ip-address'] }}"
+        MGMT_MASK: "{{ system_info_json.response.result.system['netmask'] }}"
+        MGMT_DG: "{{ system_info_json.response.result.system['default-gateway'] }}"
+      when: |
+        (
+          system_info_json.response.result.system['is-dhcp'] == 'no'
+          and preserve_management == 'yes'
+        )
+
+    - name: Set 8.0 Branch
+      set_fact:
+        branch: 'panos_v8.0'
+        skillet: 'skillet_panos_v80'
+      when: |
+        (
+        sw_version is version('8.0.0', '>=')
+        and sw_version is version('8.1.0', '<')
+        )
+
+    - name: Set 8.1 Branch
+      set_fact:
+        branch: 'panos_v8.1'
+        skillet: 'skillet_panos_v81'
+      when: |
+        (
+        sw_version is version('8.1.0', '>=')
+        and sw_version is version('9.0.0', '<')
+        )
+
+    - name: Set 9.0 Branch
+      set_fact:
+        branch: 'panos_v9.0'
+        skillet: 'skillet_panos_v90'
+      when: |
+        (
+        sw_version is version('9.0.0', '>=')
+        and sw_version is version('9.1.0', '<')
+        )
+
+    - name: Set 9.1 Branch
+      set_fact:
+        branch: 'panos_v9.1'
+        skillet: 'skillet_panos_v91'
+      when: |
+        (
+        sw_version is version('9.1.0', '>=')
+        and sw_version is version('10.0.0', '<')
+        )
+
+    - name: Set 10.0 Branch
+      set_fact:
+        branch: 'panos_v10.0'
+        skillet: 'skillet_panos_v10_0'
+      when: |
+        (
+        sw_version is version('10.0.0', '>=')
+        and sw_version is version('10.1.0', '<')
+        )
+
+    - name: Download the latest templates
+      git:
+        repo: 'https://github.com/PaloAltoNetworks/iron-skillet.git'
+        dest: '{{ playbook_dir }}/files'
+        version: '{{ branch }}'
+      tags:
+        - always
+
+    - name: debug hostvars
+      debug: msg="host vars are {{ hostvars['localhost'] }}"
+
+    - name: Execute Skillet
+      panos_skillet:
+        skillet_path: '{{ playbook_dir }}/files'
+        skillet: '{{ skillet }}'
+        provider: '{{ provider }}'
+        vars: '{{ hostvars["localhost"] }}'
+      register: skillet_output
+
+    - name: dump test output
+      debug:
+        msg: '{{ skillet_output }}'
+
