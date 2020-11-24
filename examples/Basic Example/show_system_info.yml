@@ -1,0 +1,61 @@
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  collections:
+    - paloaltonetworks.panos
+    - pan_community.skillet
+
+  vars:
+    provider:
+      ip_address: '{{ ip_address }}'
+      username: '{{ username }}'
+      password: '{{ password }}'
+
+  tasks:
+    - name: Include User Variables
+      include_vars: vars/main.yml
+
+    - name: Ensure deps are available
+      # Ensure we have all the right requirements installed in this environment
+      pip:
+        name:
+          - pan-python
+          - pandevice
+          - xmltodict
+          - requests
+          - requests_toolbelt
+          - skilletlib
+
+    - name: Show System Info
+      # Grab the system info to determine current sw-version
+      # this will also wait for the device to come on-line
+      panos_op:
+        provider: '{{ provider }}'
+        cmd: 'show system info'
+      register: system_info
+      until: system_info is not failed
+      retries: 30
+      delay: 60
+
+    - set_fact: system_info_json="{{ system_info.stdout | from_json }}"
+
+    - set_fact:
+        sw_version: "{{ system_info_json.response.result.system['sw-version'] }}"
+
+    - set_fact:
+        FW_NAME: "{{ system_info_json.response.result.system['hostname'] }}"
+        MGMT_TYPE: "{{ 'dhcp-client' if (system_info_json.response.result.system['is-dhcp'] == 'yes') else 'static' }}"
+        ADMINISTRATOR_USERNAME: "{{ username }}"
+        ADMINISTRATOR_PASSWORD: "{{ password }}"
+      when: preserve_management == 'yes'
+
+    - set_fact:
+        MGMT_IP: "{{ system_info_json.response.result.system['ip-address'] }}"
+        MGMT_MASK: "{{ system_info_json.response.result.system['netmask'] }}"
+        MGMT_DG: "{{ system_info_json.response.result.system['default-gateway'] }}"
+      when: |
+        (
+          system_info_json.response.result.system['is-dhcp'] == 'no'
+          and preserve_management == 'yes'
+        )

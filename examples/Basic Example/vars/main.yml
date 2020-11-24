@@ -1,0 +1,35 @@
+---
+# Initial connection information
+ip_address: '10.0.0.55'
+username: 'admin'
+password: 'super secret'
+auth_code: 'IBADCODE'
+
+# Should IronSkillet preserve the currently configured management parameters?
+# These include management ip address, username, passwword, etc. Generally, this should be left to 'yes'
+preserve_management: 'yes'
+
+### These values will ONLY be used if preserve_management == 'no'
+# See https://iron-skillet.readthedocs.io/en/docs_master/viz_guide_panos.html#device-setup-interfaces-management
+FW_NAME: 'panos-01'
+ADMINISTRATOR_USERNAME: 'admin'
+ADMINISTRATOR_PASSWORD: 'admin'
+MGMT_TYPE: 'dhcp-client'
+MGMT_IP: '192.0.2.6'
+MGMT_MASK: '255.255.255.0'
+MGMT_DG: '192.0.2.7'
+### end preserve_management
+
+# Customize these values for your environment
+NTP_1: '0.pool.ntp.org'
+NTP_2: '1.pool.ntp.org'
+DNS_1: '8.8.8.8'
+DNS_2: '8.8.4.4'
+SINKHOLE_IPV4: 'sinkhole.paloaltonetworks.com'
+SINKHOLE_IPV6: '2600:5200::1'
+EMAIL_PROFILE_GATEWAY: '192.0.2.1'
+EMAIL_PROFILE_FROM: 'sentfrom@yourdomain.com'
+EMAIL_PROFILE_TO: 'sendto@yourdomain.com'
+SYSLOG_SERVER: '192.0.2.2'
+API_KEY_LIFETIME: '525600'
+INCLUDE_PAN_EDL : 'yes'
