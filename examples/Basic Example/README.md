@@ -2,6 +2,8 @@
 
 A playbook to showcase a basic scenario of how you can use Ansible with a Palo Alto Networks Next-Gen Firewall.
 
+You will need the paloaltonetworks.panos collection. 
+
 ## Requirements
 
 To run this skillet create a virtual environment, install pip, ansible and download the pan_community.skillet collection:
@@ -16,6 +18,13 @@ pip install ansible
 ansible-galaxy collection install pan_community.skillet
 
 ```  
+
+*Note: If you are having certificate issues with Ansible, locate/create the file (.ansible.cfg) and add the following contents:
+```bash
+
+[galaxy]
+ignore_certs=yes
+```
 ### Python Library Requirements
 * skilletlib
 * pandevice

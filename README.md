@@ -131,7 +131,12 @@ pip install ansible
 ansible-galaxy collection install pan_community.skillet
 
 ```
+*Note: If you are having certificate issues with Ansible, locate/create the file (.ansible.cfg) and add the following contents:
+```bash
 
+[galaxy]
+ignore_certs=yes
+```
 ## Running
 
 Edit the variables file to customize IronSkillet for your environment, then run the following command:
