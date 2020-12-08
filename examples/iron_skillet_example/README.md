@@ -1,25 +1,31 @@
-# skillet-ansible
+# panos_ansible_iron_skillet
 
-Collection for working with Skillets
+A playbook to load IronSkillet on a freshly deployed PAN-OS VM-Series. For more information about IronSkillet, see
+the [IronSkillet documentation](https://iron-skillet.readthedocs.io/en/docs_master/overview.html).  
 
+You will need the paloaltonetworks.panos and paloaltonetworks.skillet collections installed
 
-Resources:
+## Requirements
 
-[Skillet District](https://live.paloaltonetworks.com/t5/skillet-district/ct-p/Skillets) | General skillet information and updates
+To run this skillet create a virtual environment, install pip, ansible and download the pan_community.skillet collection:
+ 
+```bash
 
-[Skillet Builder Docs](https://skilletbuilder.readthedocs.io/en/latest/) | Information on building skillets
+apt install python3-venv
+python3 -m venv .venv
+. ./venv/bin/activate
+pip install ansible
+
+ansible-galaxy collection install pan_community.skillet
+
+```  
+### Python Library Requirements
+* skilletlib
+* pandevice
+* pan-python
 
 ## Example Tasks
-
-The general usage is to first clone / update the desired skillet repository into a specific directory. Then call
-`panos_skillet` passing in the directory in which to search for Skillets, and the name of the skillet you want to 
-execute.
-
-Because each skillet will specify it's own set of required and optional variables, a handy short-cut is to just pass
-in all hostvars as the 'vars' parameters. This will allow you to construct a vars file elsewhere with the desired
-variable values. 
-
-
+Because each skillet will specify it's own set of required and optional variables, a handy short-cut is to just pass in all hostvars as the 'vars' parameters. This will allow you to construct a vars file elsewhere with the desired variable values. 
 ```yaml
 
 - hosts: localhost
@@ -55,8 +61,24 @@ variable values.
 
 ```
 
+## Example vars file:
+```yaml
 
-Example of Validation:
+---
+# provider information for PAN-OS NGFW
+ip_address: '10.10.10.10'
+username: 'admin'
+password: 'super_secret !'
+# Variables to pass to the Validation / Configuration Skillet
+# These are used to render configuration templates and/or control
+# logic flow
+skillet_vars:
+  some_variable: some_value
+  another_variable: another_value
+
+```
+
+## Example of Validation:
 
 ```yaml
 
@@ -91,53 +113,7 @@ Example of Validation:
 
 ```
 
-Example vars file:
-
-```yaml
-
----
-# provider information for PAN-OS NGFW
-ip_address: '10.10.10.10'
-username: 'admin'
-password: 'super_secret !'
-# Variables to pass to the Validation / Configuration Skillet
-# These are used to render configuration templates and/or control
-# logic flow
-skillet_vars:
-  some_variable: some_value
-  another_variable: another_value
-
-```
-
-A more complete example can be found [here](https://github.com/nembery/panos_ansible_iron_skillet).
-
-## Python Library Requirements:
-* skilletlib
-* pandevice
-* pan-python
-
-
-## Installation
-
-This collection is currently installable as 'pan_community.skillet'
-
-```bash
-
-apt install python3-venv
-python3 -m venv .venv
-. ./.venv/bin/activate
-pip install ansible
-
-ansible-galaxy collection install pan_community.skillet
-
-```
-*Note: If you are having certificate issues with Ansible, locate/create the file (.ansible.cfg) and add the following contents:
-```bash
-
-[galaxy]
-ignore_certs=yes
-```
-## Running
+## Running the playbook
 
 Edit the variables file to customize IronSkillet for your environment, then run the following command:
 
@@ -148,3 +124,10 @@ ansible-playbook -i inventory.yml -e 'username=admin' -e 'password=Super! Secret
 ```
 
 * Note - Any variables passed in via a `-e` switch will override values in the vars/main.yml file.
+
+### Other Useful Playbooks
+ * [Skillet Ansible](https://github.com/PaloAltoNetworks/skillet_ansible) - Collection for working with skillets
+ * [CDL Global Config](https://github.com/PaloAltoNetworks/panos-logging-skillets/tree/master/cdl_global_config_playbook) - Enables, configures, and validates Cortex Data Lake in a NGFW
+ 
+ ### Useful Ansible Collections
+* [PAN-OS Ansible Collection](https://github.com/PaloAltoNetworks/pan-os-ansible)

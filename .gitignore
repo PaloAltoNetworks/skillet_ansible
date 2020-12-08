@@ -1,4 +1,5 @@
 .idea
 venv
 paloaltonetworks.skillet/*tar.gz
-pan_community.skillet/*tar.gz
+examples/iron_skillet_example/files
+.DS_Store
