@@ -48,18 +48,28 @@ EXAMPLES = '''
   include_vars: 'vars.yml'
   no_log: 'yes'
 
+- name: Ensure deps are available
+  # Ensure we have all the right requirements installed in this environment
+  pip:
+    name:
+      - pan-python
+      - pandevice
+      - xmltodict
+      - requests
+      - requests_toolbelt
+      - skilletlib
+
 - name: Baselines the FW
   panos_baseline:
     provider: '{{ provider }}'
 '''
 
 RETURN = '''
---> FIXME
 stdout:
-    description: output (if any) of the given skillet as JSON formatted string
+    description: output (if any) of the given skillet load's success
     returned: success
     type: string
-    sample: "{entry: {@name: dmz-block, ip-netmask: 192.168.55.0/24, description: Address CIDR for sales org}}"
+    sample: "{"changed": true}"
 '''
 
 from ansible.module_utils.basic import AnsibleModule
@@ -67,7 +77,6 @@ from ansible.module_utils.basic import AnsibleModule
 try:
     from skilletlib import Panos
     from skilletlib.exceptions import PanoplyException
-
 except ImportError:
     pass
 
