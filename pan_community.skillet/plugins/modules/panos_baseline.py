@@ -29,6 +29,10 @@ module: panos_baseline
 short_description: Load a baseline config
 description:
     - This module executes a panos baseline skillet on the target host
+    - The baseline configuration is an auto-generated configuration file 
+      that contains ONLY the authentication information used to connect 
+      to the device and the current network connectivity information, 
+      including: IPv4 Address, netmask, default gateway, and DNS servers.
     - This module does not provide guards of any sort, so USE AT YOUR OWN RISK.
     - Refer to the Skillet documentation for more details
     - https://docs.paloaltonetworks.com/pan-os.html
@@ -37,9 +41,11 @@ author: "Anna Barone (@abarone)"
 version_added: "0.1"
 
 requirements:
-    - skilletlib >= 0.3.9.6
+    - skilletlib >= 1.0.1
 
 notes:
+    - A commit is needed after this module to set the generated baseline
+      configuration as the running config.
     - Check mode is not supported.
 '''
 
