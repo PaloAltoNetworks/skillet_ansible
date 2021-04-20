@@ -37,7 +37,7 @@ author: "Andrew Mallory (@andrewmallory)"
 version_added: "0.1"
 
 requirements:
-    - skilletlib >= 0.3.9.6
+    - skilletlib >= 1.0.1
 
 notes:
     - Check mode is not supported.
