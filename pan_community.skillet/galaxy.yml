@@ -2,13 +2,14 @@ namespace: pan_community
 
 name: skillet
 
-version: 1.0.5
+version: 1.0.6
 
 readme: README.md
 
 authors:
   - Nathan Embery <nembery@paloaltonetworks.com>
   - Andrew Mallory <amallory@paloaltonetworks.com>
+  - Anna Barone <abarone@paloaltonetworks.com>
 
 
 description: Collection for working with PAN-OS Configuration XML Snippets and Skillets
