@@ -1,4 +1,4 @@
-ansible==2.10.0
+ansible==4.2.0
 pan-python==0.16.0
 pandevice==0.14.0
 skilletlib~=1.0.1
